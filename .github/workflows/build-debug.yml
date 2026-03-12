@@ -17,25 +17,21 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      # Récupère gradle 8.2.1 et génère un wrapper complet
+      - name: Install Gradle 8.2.1
+        run: |
+          wget https://services.gradle.org/distributions/gradle-8.2.1-bin.zip
+          unzip gradle-8.2.1-bin.zip
+          ./gradle-8.2.1/bin/gradle wrapper --gradle-version 8.2.1
+
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
       - name: Build Debug APK
         run: ./gradlew assembleDebug --stacktrace
 
-      # 👇 Lister où Gradle a mis l'APK
-      - name: List outputs (debug)
-        run: |
-          echo "=== List app/build ==="
-          ls -R app/build || true
-          echo "=== Search *.apk under outputs ==="
-          find app/build/outputs -type f -name "*.apk" -print || true
-
-      # 👇 Uploader n'importe quel APK généré sous outputs/
-      - name: Upload Debug APK(s)
+      - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
           name: ZebraPowerEventBridge-debug
-          path: |
-            app/build/outputs/**/*.apk
-          if-no-files-found: warn  # évite l'échec si rien n'est trouvé
+          path: app/build/outputs/**/*.apk
