@@ -1,0 +1,33 @@
+name: List Build Output
+
+on:
+  workflow_dispatch:
+
+jobs:
+  list:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Grant permissions
+        run: chmod +x ./gradlew
+
+      - name: Build debug
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: List build folders
+        run: |
+          echo "===== app/build ====="
+          ls -R app/build || true
+          echo "===== outputs ====="
+          ls -R app/build/outputs || true
+          echo "===== apk ====="
+          ls -R app/build/outputs/apk || true
