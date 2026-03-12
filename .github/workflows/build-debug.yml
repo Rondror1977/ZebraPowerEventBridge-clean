@@ -23,8 +23,19 @@ jobs:
       - name: Build Debug APK
         run: ./gradlew assembleDebug --stacktrace
 
-      - name: Upload Debug APK
+      # 👇 Lister où Gradle a mis l'APK
+      - name: List outputs (debug)
+        run: |
+          echo "=== List app/build ==="
+          ls -R app/build || true
+          echo "=== Search *.apk under outputs ==="
+          find app/build/outputs -type f -name "*.apk" -print || true
+
+      # 👇 Uploader n'importe quel APK généré sous outputs/
+      - name: Upload Debug APK(s)
         uses: actions/upload-artifact@v4
         with:
           name: ZebraPowerEventBridge-debug
-          path: app/build/outputs/apk/debug/*.apk
+          path: |
+            app/build/outputs/**/*.apk
+          if-no-files-found: warn  # évite l'échec si rien n'est trouvé
